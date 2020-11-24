@@ -1,0 +1,40 @@
+set -e
+
+echo "Drag asymptote-x.xx.src.tar file here:"
+read file
+fileext="${file#*.*.}"
+filename="${file#*.*.}"
+filedir=${file%/*}
+if [ "$fileext" != "src.tgz" ]; then
+  echo "Invalid file: please use a .tgz file."
+  exit 1
+fi
+
+cd $filedir
+echo "Unpacking $file to $filedir C2ontinue?(yes/no)" 
+read input
+if [ "$input" != "yes" ]; then
+  exit 0
+fi
+tar -xvzf "$file"
+cd ${file%.*.*}
+config_work=$(./configure)
+
+if[[ config_work == *"no acceptable C"*"in \$PATH"* ]]; then
+  echo "You need to install gcc.  For Mac users you can install Xcode or Xcode tools.
+  exit 1
+fi
+
+make_work=$(make all)
+
+if[ make_work == *"pdflatex: No such file or directory"* ]; then
+  echo "You need to install TeX Live"
+  exit 1
+fi
+
+echo "Files collected successfully. Would you like to install ${filename##*/}?(yes/no)"
+read input
+if [ "$input" != "yes" ]; then
+  exit 0
+fi
+sudo make install
