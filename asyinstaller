@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e
 
 echo "Drag asymptote-x.xx.src.tar file here:"
